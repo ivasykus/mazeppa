@@ -14,7 +14,13 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt install -y tesseract-ocr tesseract-ocr-deu-frak poppler-utils qpdf pandoc
+        sudo apt install -y tesseract-ocr qpdf poppler-utils pandoc curl
+
+    - name: Install Fraktur language model manually
+      run: |
+        sudo mkdir -p /usr/share/tesseract-ocr/5/tessdata
+        sudo curl -L -o /usr/share/tesseract-ocr/5/tessdata/deu-frak.traineddata \
+          https://github.com/tesseract-ocr/tessdata/raw/main/deu-frak.traineddata
 
     - name: Extract pages 7–16
       run: |
@@ -28,4 +34,12 @@ jobs:
 
     - name: Convert PDF to DOCX
       run: |
-        pandoc ou
+        pandoc output/mazeppa_ocr.pdf -o ocr/mazeppa_1_pages7-16.docx
+
+    - name: Commit and push result
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add ocr/mazeppa_1_pages7-16.docx
+        git commit -m "Add OCR result for pages 7–16 of Mazeppa 1 (Fraktur)"
+        git push
