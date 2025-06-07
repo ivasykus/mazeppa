@@ -35,5 +35,17 @@ jobs:
     - name: Run OCR with Tesseract (deu_latf) on all images
       run: |
         mkdir output
-        for img in images/page*.tif*; do \
-          tesseract "$img" "output/$(basename "$img" | sed 's/\.[^.]*$//')" -l deu_latf --t_*
+        for img in images/page*.tif*; do
+          tesseract "$img" "output/$(basename "$img" | sed 's/\.[^.]*$//')" -l deu_latf --tessdata-dir /usr/share/tesseract-ocr/tessdata --psm 1 txt
+        done
+        cat output/*.txt > output/mazeppa_ocr.txt
+
+    - name: Convert TXT to DOCX
+      run: |
+        pandoc output/mazeppa_ocr.txt -o ocr/mazeppa_1_pages7-16.docx
+
+    - name: Upload result as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: mazeppa_ocr_pages7-16
+        path: ocr/mazeppa_1_pages7-16.docx
