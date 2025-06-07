@@ -35,8 +35,8 @@ jobs:
     - name: Run OCR with Tesseract (deu_latf) on all images
       run: |
         mkdir output
-        for img in images/page*.tiff; do \
-          tesseract "$img" "output/$(basename "$img" .tiff)" -l deu_latf --tessdata-dir /usr/share/tesseract-ocr/tessdata --psm 1 txt; \
+        for img in images/page*.tif*; do \
+          tesseract "$img" "output/$(basename "$img" | sed 's/\.[^.]*$//')" -l deu_latf --tessdata-dir /usr/share/tesseract-ocr/tessdata --psm 1 txt; \
         done
         cat output/*.txt > output/mazeppa_ocr.txt
 
