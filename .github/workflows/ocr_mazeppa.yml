@@ -18,8 +18,8 @@ jobs:
 
     - name: Install Fraktur language model manually
       run: |
-        sudo mkdir -p /usr/share/tesseract-ocr/5/tessdata
-        sudo curl -L -o /usr/share/tesseract-ocr/5/tessdata/deu-frak.traineddata \
+        sudo mkdir -p /usr/share/tesseract-ocr/4.00/tessdata
+        sudo curl -L -o /usr/share/tesseract-ocr/4.00/tessdata/deu-frak.traineddata \
           https://github.com/tesseract-ocr/tessdata/raw/main/deu-frak.traineddata
 
     - name: Extract pages 7–16
@@ -28,6 +28,8 @@ jobs:
         qpdf "Mazeppa 1.pdf" --pages . 7-16 -- pages/mazeppa_excerpt.pdf
 
     - name: Run OCR with Tesseract (Fraktur)
+      env:
+        TESSDATA_PREFIX: /usr/share/tesseract-ocr/4.00/
       run: |
         mkdir output
         tesseract pages/mazeppa_excerpt.pdf output/mazeppa_ocr -l deu-frak --psm 1 pdf
