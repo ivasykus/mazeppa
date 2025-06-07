@@ -15,29 +15,34 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y tesseract-ocr qpdf poppler-utils pandoc curl
-        sudo mkdir -p /usr/share/tesseract-ocr/tessdata
-        sudo mkdir -p /usr/share/tessdata
 
     - name: Download deu_latf.traineddata
       run: |
+        sudo mkdir -p /usr/share/tesseract-ocr/tessdata
         sudo curl -L -o /usr/share/tesseract-ocr/tessdata/deu_latf.traineddata \
           https://github.com/tesseract-ocr/tessdata_best/raw/main/deu_latf.traineddata
-        sudo cp /usr/share/tesseract-ocr/tessdata/deu_latf.traineddata /usr/share/tessdata/deu_latf.traineddata
 
-    - name: Extract pages 7–16
+    - name: Extract pages 7–16 as PDF
       run: |
         mkdir pages
         qpdf "Mazeppa 1.pdf" --pages . 7-16 -- pages/mazeppa_excerpt.pdf
 
-    - name: Run OCR with Tesseract (deu_latf)
+    - name: Convert PDF pages to images
+      run: |
+        mkdir images
+        pdftoppm -tiff pages/mazeppa_excerpt.pdf images/page
+
+    - name: Run OCR with Tesseract (deu_latf) on all images
       run: |
         mkdir output
-        tesseract pages/mazeppa_excerpt.pdf output/mazeppa_ocr -l deu_latf --tessdata-dir /usr/share/tesseract-ocr/tessdata --psm 1 pdf || \
-        tesseract pages/mazeppa_excerpt.pdf output/mazeppa_ocr -l deu_latf --tessdata-dir /usr/share/tessdata --psm 1 pdf
+        for img in images/page*.tiff; do \
+          tesseract "$img" "output/$(basename "$img" .tiff)" -l deu_latf --tessdata-dir /usr/share/tesseract-ocr/tessdata --psm 1 txt; \
+        done
+        cat output/*.txt > output/mazeppa_ocr.txt
 
-    - name: Convert PDF to DOCX
+    - name: Convert TXT to DOCX
       run: |
-        pandoc output/mazeppa_ocr.pdf -o ocr/mazeppa_1_pages7-16.docx
+        pandoc output/mazeppa_ocr.txt -o ocr/mazeppa_1_pages7-16.docx
 
     - name: Commit and push result
       run: |
