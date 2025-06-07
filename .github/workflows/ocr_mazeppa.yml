@@ -11,15 +11,15 @@ jobs:
     - name: Checkout repo
       uses: actions/checkout@v3
 
-- name: Install dependencies
-  run: |
-    sudo apt update
-    sudo apt install -y tesseract-ocr tesseract-ocr-deu-frak poppler-utils qpdf pandoc
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y tesseract-ocr tesseract-ocr-deu-frak poppler-utils qpdf pandoc
 
-- name: Extract pages 7–16
-  run: |
-    mkdir pages
-    qpdf "Mazeppa 1.pdf" --pages . 7-16 -- pages/mazeppa_excerpt.pdf
+    - name: Extract pages 7–16
+      run: |
+        mkdir pages
+        qpdf "Mazeppa 1.pdf" --pages . 7-16 -- pages/mazeppa_excerpt.pdf
 
     - name: Run OCR with Tesseract (Fraktur)
       run: |
@@ -28,12 +28,4 @@ jobs:
 
     - name: Convert PDF to DOCX
       run: |
-        pandoc output/mazeppa_ocr.pdf -o ocr/mazeppa_1_pages7-16.docx
-
-    - name: Commit and push result
-      run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
-        git add ocr/mazeppa_1_pages7-16.docx
-        git commit -m "Add OCR result for pages 7–16 of Mazeppa 1 (Fraktur)"
-        git push
+        pandoc ou
