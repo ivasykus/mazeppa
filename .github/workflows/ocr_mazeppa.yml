@@ -1,4 +1,4 @@
-name: OCR Mazeppa Fraktur
+name: OCR Mazeppa Fraktur (deu_latf)
 
 on:
   workflow_dispatch:
@@ -18,22 +18,22 @@ jobs:
         sudo mkdir -p /usr/share/tesseract-ocr/tessdata
         sudo mkdir -p /usr/share/tessdata
 
-    - name: Install Fraktur language model manually (to all known paths)
+    - name: Download deu_latf.traineddata
       run: |
-        sudo curl -L -o /usr/share/tesseract-ocr/tessdata/deu-frak.traineddata \
-          https://github.com/tesseract-ocr/tessdata/raw/main/deu-frak.traineddata
-        sudo cp /usr/share/tesseract-ocr/tessdata/deu-frak.traineddata /usr/share/tessdata/deu-frak.traineddata
+        sudo curl -L -o /usr/share/tesseract-ocr/tessdata/deu_latf.traineddata \
+          https://github.com/tesseract-ocr/tessdata_best/raw/main/deu_latf.traineddata
+        sudo cp /usr/share/tesseract-ocr/tessdata/deu_latf.traineddata /usr/share/tessdata/deu_latf.traineddata
 
     - name: Extract pages 7–16
       run: |
         mkdir pages
         qpdf "Mazeppa 1.pdf" --pages . 7-16 -- pages/mazeppa_excerpt.pdf
 
-    - name: Run OCR with Tesseract (Fraktur)
+    - name: Run OCR with Tesseract (deu_latf)
       run: |
         mkdir output
-        tesseract pages/mazeppa_excerpt.pdf output/mazeppa_ocr -l deu-frak --tessdata-dir /usr/share/tesseract-ocr/tessdata --psm 1 pdf || \
-        tesseract pages/mazeppa_excerpt.pdf output/mazeppa_ocr -l deu-frak --tessdata-dir /usr/share/tessdata --psm 1 pdf
+        tesseract pages/mazeppa_excerpt.pdf output/mazeppa_ocr -l deu_latf --tessdata-dir /usr/share/tesseract-ocr/tessdata --psm 1 pdf || \
+        tesseract pages/mazeppa_excerpt.pdf output/mazeppa_ocr -l deu_latf --tessdata-dir /usr/share/tessdata --psm 1 pdf
 
     - name: Convert PDF to DOCX
       run: |
@@ -44,5 +44,5 @@ jobs:
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
         git add ocr/mazeppa_1_pages7-16.docx
-        git commit -m "Add OCR result for pages 7–16 of Mazeppa 1 (Fraktur)"
+        git commit -m "Add OCR result for pages 7–16 of Mazeppa 1 (deu_latf)"
         git push
