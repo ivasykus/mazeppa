@@ -23,25 +23,4 @@ jobs:
           https://github.com/tesseract-ocr/tessdata/raw/main/deu-frak.traineddata
 
     - name: Extract pages 7–16
-      run: |
-        mkdir pages
-        qpdf "Mazeppa 1.pdf" --pages . 7-16 -- pages/mazeppa_excerpt.pdf
-
-    - name: Run OCR with Tesseract (Fraktur)
-      env:
-        TESSDATA_PREFIX: /usr/share/tesseract-ocr/
-      run: |
-        mkdir output
-        tesseract pages/mazeppa_excerpt.pdf output/mazeppa_ocr -l deu-frak --psm 1 pdf
-
-    - name: Convert PDF to DOCX
-      run: |
-        pandoc output/mazeppa_ocr.pdf -o ocr/mazeppa_1_pages7-16.docx
-
-    - name: Commit and push result
-      run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
-        git add ocr/mazeppa_1_pages7-16.docx
-        git commit -m "Add OCR result for pages 7–16 of Mazeppa 1 (Fraktur)"
-        git push
+      run
